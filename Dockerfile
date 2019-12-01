@@ -1,6 +1,6 @@
 FROM php:7.4-alpine
 
-LABEL "com.github.actions.name"="Psalm - Code quality tool for PHP"
+LABEL "com.github.actions.name"="Psalm"
 LABEL "com.github.actions.description"="A static analysis tool for finding errors in PHP applications"
 LABEL "com.github.actions.icon"="check"
 LABEL "com.github.actions.color"="blue"
@@ -9,9 +9,7 @@ LABEL "repository"="http://github.com/psalm/psalm-github-actions"
 LABEL "homepage"="http://github.com/actions"
 LABEL "maintainer"="Matt Brown <github@muglug.com>"
 
-# Code mostly taken from mickaelandrieu/psalm-ga
-# Updated version of phpqa/psalm Docker image.
-#
+# Code borrowed from mickaelandrieu/psalm-ga which in turn borrowed from phpqa/psalm
 
 # Install Tini - https://github.com/krallin/tini
 
