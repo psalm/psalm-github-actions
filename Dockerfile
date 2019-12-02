@@ -16,9 +16,13 @@ LABEL "maintainer"="Matt Brown <github@muglug.com>"
 RUN apk add --no-cache tini
 
 COPY --from=composer:1.9 /usr/bin/composer /usr/bin/composer
+
 RUN COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME="/composer" \
-    composer global config minimum-stability dev \
+    composer global config minimum-stability dev
+
+RUN COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_HOME="/composer" \
     composer global require --prefer-dist --no-progress --dev vimeo/psalm:dev-master
 
 ENV PATH /composer/vendor/bin:${PATH}
