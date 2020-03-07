@@ -1,0 +1,14 @@
+name: Trigger rebuild
+
+on:
+  schedule:
+        - cron: '0 3 * * *'
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger build on dockerhub
+        run: |
+          - curl -L -X POST https://hub.docker.com/api/build/v1/source/xxx/trigger/yyy/call/
