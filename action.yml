@@ -1,0 +1,16 @@
+
+# https://help.github.com/en/articles/metadata-syntax-for-github-actions
+
+author: 'muglug'
+
+branding:
+  icon: 'check'
+  color: 'blue'
+
+description: 'Run Psalm via GithubAction.'
+
+name: 'psalm'
+
+runs:
+  using: 'docker'
+  image: 'docker://muglug/psalm-github-actions'
