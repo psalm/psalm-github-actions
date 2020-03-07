@@ -1,6 +1,6 @@
 # Psalm Github action
 
-Run Psalm as a github action
+Run Psalm as a github action.
 
 ```yaml
 name: Static analysis
@@ -17,5 +17,5 @@ jobs:
 
       - name: Psalm
         uses: docker://muglug/psalm-github-actions
-        with:
+
 ```
