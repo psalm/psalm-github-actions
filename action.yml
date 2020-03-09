@@ -13,4 +13,4 @@ name: 'psalm'
 
 runs:
   using: 'docker'
-  image: 'docker://muglug/psalm-github-actions'
+  image: 'docker://vimeo/psalm-github-actions'
