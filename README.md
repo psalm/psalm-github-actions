@@ -16,6 +16,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Psalm
-        uses: docker://muglug/psalm-github-actions
+        uses: docker://vimeo/psalm-github-actions
 
 ```
