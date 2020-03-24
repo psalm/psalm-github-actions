@@ -2,7 +2,7 @@ name: Trigger rebuild
 
 on:
   schedule:
-        - cron: '50 4 * * *'
+        - cron: '55 3 * * *'
 
 jobs:
   trigger:
