@@ -21,6 +21,9 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME="/composer" \
     composer global config minimum-stability dev
 
+# This line invalidates cache when master branch change
+ADD https://github.com/vimeo/psalm/commits/master.atom /dev/null
+
 RUN COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME="/composer" \
     composer global require --prefer-dist --no-progress --dev vimeo/psalm
