@@ -1,4 +1,11 @@
 #!/bin/sh -l
 set -e
 
-sh -c "composer install --no-scripts --no-progress && /composer/vendor/bin/psalm --version && /composer/vendor/bin/psalm  --output-format=github $*"
+/composer/vendor/bin/psalm --version
+
+COMPOSER_COMMAND="composer install --no-scripts --no-progress"
+echo "::group::$COMPOSER_COMMAND"
+$COMPOSER_COMMAND
+echo "::endgroup::"
+
+/composer/vendor/bin/psalm  --output-format=github $*
