@@ -26,7 +26,7 @@ ADD https://github.com/vimeo/psalm/commits/master.atom /dev/null
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME="/composer" \
-    composer global require --prefer-dist --no-progress --dev vimeo/psalm
+    composer global require vimeo/psalm --prefer-dist --no-progress --dev
 
 ENV PATH /composer/vendor/bin:${PATH}
 
