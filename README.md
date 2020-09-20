@@ -19,3 +19,11 @@ jobs:
         uses: docker://vimeo/psalm-github-actions
 
 ```
+
+You can also specify a version (after 3.14.2).
+
+```diff
+       - name: Psalm
+-        uses: docker://vimeo/psalm-github-actions
++        uses: docker://vimeo/psalm-github-actions:3.14.2
+```
