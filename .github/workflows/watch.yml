@@ -3,7 +3,6 @@ name: Watch
 on:
   schedule:
     - cron: '30 */4 * * *'
-  push: ~
 
 jobs:
   docker:
