@@ -27,3 +27,13 @@ You can also specify a version (after 3.14.2).
 -        uses: docker://vimeo/psalm-github-actions
 +        uses: docker://vimeo/psalm-github-actions:3.14.2
 ```
+
+Specify `REQUIRE_DEV=true` to install dev dependencies and `CHECK_PLATFORM_REQUIREMENTS=false` in order to ignore platform requirements.
+
+```diff
+       - name: Psalm
+         uses: docker://vimeo/psalm-github-actions
++        env:
++          REQUIRE_DEV: "true"
++          CHECK_PLATFORM_REQUIREMENTS: "false"
+```
