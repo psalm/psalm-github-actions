@@ -7,9 +7,9 @@ branding:
   icon: 'check'
   color: 'blue'
 
-description: 'Run Psalm via GithubAction.'
+description: 'Run Psalm via GitHub Actions'
 
-name: 'psalm'
+name: 'Psalm Static Analysis'
 
 runs:
   using: 'docker'
