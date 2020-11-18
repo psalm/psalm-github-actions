@@ -11,6 +11,16 @@ description: 'Run Psalm via GitHub Actions'
 
 name: 'Psalm Static Analysis'
 
+inputs:
+  security_analysis:
+    required: false
+    default: false
+    description: 'Whether or not to use Psalm’s security analysis'
+  report_file:
+    required: false
+    default: ''
+    description: 'File for Psalm’s output'
+
 runs:
   using: 'docker'
   image: 'docker://vimeo/psalm-github-actions'
