@@ -20,6 +20,14 @@ inputs:
     required: false
     default: ''
     description: 'File for Psalm’s output'
+  composer_require_dev:
+    required: false
+    default: false
+    description: 'Whether or not Composer installs dev packages'
+  composer_ignore_platform_reqs:
+    required: false
+    default: false
+    description: 'Whether or not the --ignore-platform-reqs flag is passed to Composer'
 
 runs:
   using: 'docker'
