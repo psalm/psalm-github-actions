@@ -11,7 +11,7 @@ if [ ! -z "$INPUT_REPORT_FILE" ]; then
     REPORT="--report=$INPUT_REPORT_FILE"
 fi
 
-if test -f "$FILE"; then
+if test -f "composer.json"; then
     IGNORE_PLATFORM_REQS=""
     if [ "$CHECK_PLATFORM_REQUIREMENTS" = "false" ] || [ "$INPUT_COMPOSER_CHECK_PLATFORM_REQUIREMENTS" = "false" ]; then
         IGNORE_PLATFORM_REQS="--ignore-platform-reqs"
