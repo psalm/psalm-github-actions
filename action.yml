@@ -9,7 +9,7 @@ branding:
 
 description: 'Run Psalm via GitHub Actions'
 
-name: 'Psalm Static Analysis'
+name: 'Psalm – Static Analysis for PHP'
 
 inputs:
   security_analysis:
