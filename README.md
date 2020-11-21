@@ -3,7 +3,7 @@
 Run Psalm as a github action.
 
 ```yaml
-name: Static analysis
+name: Psalm Static analysis
 
 on: [push, pull_request]
 
