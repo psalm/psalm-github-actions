@@ -1,6 +1,8 @@
 #!/bin/sh -l
 set -e
 
+echo "This is the ClearFacts forked version"
+
 TAINT_ANALYSIS=""
 if [ "$INPUT_SECURITY_ANALYSIS" = "true" ]; then
     TAINT_ANALYSIS="--taint-analysis"
