@@ -13,7 +13,7 @@ fi
 
 if test -f "composer.json"; then
     IGNORE_PLATFORM_REQS=""
-    if [ "$CHECK_PLATFORM_REQUIREMENTS" = "false" ] || [ "$INPUT_COMPOSER_IGNORE_PLATFORM_REQS" = "false" ]; then
+    if [ "$CHECK_PLATFORM_REQUIREMENTS" = "false" ] || [ "$INPUT_COMPOSER_IGNORE_PLATFORM_REQS" = "true" ]; then
         IGNORE_PLATFORM_REQS="--ignore-platform-reqs"
     fi
 
