@@ -25,7 +25,7 @@ then
     then
       ssh-keyscan -t rsa "$INPUT_SSH_DOMAIN" >> /tmp/.ssh/known_hosts
     fi
-    echo "Installing keys for root:"
+    echo "Installing keys:"
 
     echo "$INPUT_SSH_KEY" > /tmp/.ssh/action_rsa
     echo "$INPUT_SSH_KEY_PUB" > /tmp/.ssh/action_rsa.pub
@@ -36,11 +36,10 @@ then
     echo "Public key hash:"
     md5sum /tmp/.ssh/action_rsa.pub
 
-    echo "sshCommand = \"ssh -i /tmp/.ssh/action_rsa -o UserKnownHostsFile=/tmp/.ssh/known_hosts -vvvv\"" >> ~/.gitconfig
     echo "[core]" >> ~/.gitconfig
-    git config --list
-    echo "OK"
+    echo "sshCommand = \"ssh -i /tmp/.ssh/action_rsa -o UserKnownHostsFile=/tmp/.ssh/known_hosts\"" >> ~/.gitconfig
 
+    echo "OK"
     echo "::endgroup::"
 else
 	  echo "No private keys supplied"
