@@ -28,6 +28,16 @@ inputs:
     required: false
     default: false
     description: 'Whether or not the --ignore-platform-reqs flag is passed to Composer'
+  ssh_key:
+    description: The private key contents to use for private repositories
+    required: false
+  ssh_key_pub:
+    description: The public key contents to use for private repositories
+    required: false
+  ssh_domain:
+    description: The domain to gather SSH public keys for (automatic for github.com, gitlab.com, bitbucket.org)
+    required: false
+
 
 runs:
   using: 'docker'
