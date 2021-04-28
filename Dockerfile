@@ -13,7 +13,7 @@ LABEL "maintainer"="Matt Brown <github@muglug.com>"
 
 # Install Tini - https://github.com/krallin/tini
 
-RUN apk add --no-cache tini git
+RUN apk add --no-cache tini git openssh-client
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

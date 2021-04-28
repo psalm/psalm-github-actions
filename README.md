@@ -72,3 +72,29 @@ These are both set to false by default.
 +          composer_require_dev: true
 +          composer_ignore_platform_reqs: true
 ```
+
+
+Auth for private composer repositories
+-------------------------------
+If you have private composer dependencies, SSH authentication must be used. Generate an SSH key pair for this purpose and add it to your private repository's configuration, preferable with only read-only privileges. On Github for instance, this can be done by using [deploy keys][deploy-keys].
+
+Add the key pair to your project using  [Github Secrets][secrets], and pass them into this action by using the `ssh_key` and `ssh_key_pub` inputs. If your private repository is stored on another server than github.com, you also need to pass the domain via `ssh_domain`.
+
+Example:
+
+```yaml
+jobs:
+  build:
+
+    ...
+
+    - name: Psalm
+      uses: docker://vimeo/psalm-github-actions
+      with:
+        ssh_key: ${{ secrets.SOME_PRIVATE_KEY }}
+        ssh_key_pub: ${{ secrets.SOME_PUBLIC_KEY }}
+        # Optional:
+        ssh_domain: my-own-github.com 
+```
+
+github.com, gitlab.com and bitbucket.org are automatically added to the list of SSH known hosts. You can provide your own domain via `ssh_domain` input.

@@ -11,6 +11,40 @@ if [ ! -z "$INPUT_REPORT_FILE" ]; then
     REPORT="--report=$INPUT_REPORT_FILE"
 fi
 
+if [ -n "$INPUT_SSH_KEY" ]
+then
+    echo "::group::Keys setup for private repositories"
+
+    echo "Keyscan:"
+    mkdir -p /tmp/.ssh
+    ssh-keyscan -t rsa github.com >> /tmp/.ssh/known_hosts
+    ssh-keyscan -t rsa gitlab.com >> /tmp/.ssh/known_hosts
+    ssh-keyscan -t rsa bitbucket.org >> /tmp/.ssh/known_hosts
+
+    if [ -n "$INPUT_SSH_DOMAIN" ]
+    then
+      ssh-keyscan -t rsa "$INPUT_SSH_DOMAIN" >> /tmp/.ssh/known_hosts
+    fi
+    echo "Installing keys:"
+
+    echo "$INPUT_SSH_KEY" > /tmp/.ssh/action_rsa
+    echo "$INPUT_SSH_KEY_PUB" > /tmp/.ssh/action_rsa.pub
+    chmod 600 /tmp/.ssh/action_rsa
+
+    echo "Private key hash:"
+    md5sum /tmp/.ssh/action_rsa
+    echo "Public key hash:"
+    md5sum /tmp/.ssh/action_rsa.pub
+
+    echo "[core]" >> ~/.gitconfig
+    echo "sshCommand = \"ssh -i /tmp/.ssh/action_rsa -o UserKnownHostsFile=/tmp/.ssh/known_hosts\"" >> ~/.gitconfig
+
+    echo "OK"
+    echo "::endgroup::"
+else
+	  echo "No private keys supplied"
+fi
+
 if test -f "composer.json"; then
     IGNORE_PLATFORM_REQS=""
     if [ "$CHECK_PLATFORM_REQUIREMENTS" = "false" ] || [ "$INPUT_COMPOSER_IGNORE_PLATFORM_REQS" = "false" ]; then
