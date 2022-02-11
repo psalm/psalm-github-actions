@@ -45,6 +45,11 @@ else
 	  echo "No private keys supplied"
 fi
 
+if [ -n "$INPUT_RELATIVE_DIR" ]
+then
+    cd "$INPUT_RELATIVE_DIR" || echo "Could not cd into the specified subdir."; exit 1
+fi
+
 if test -f "composer.json"; then
     IGNORE_PLATFORM_REQS=""
     if [ "$CHECK_PLATFORM_REQUIREMENTS" = "false" ] || [ "$INPUT_COMPOSER_IGNORE_PLATFORM_REQS" = "true" ]; then
