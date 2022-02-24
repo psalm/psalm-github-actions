@@ -73,6 +73,19 @@ These are both set to false by default.
 +          composer_ignore_platform_reqs: true
 ```
 
+### Use relative dir
+
+If your composer file is not in the directory, you can specify the relative directory.
+
+Use the following config:
+
+```diff
+       - name: Psalm
+         uses: docker://vimeo/psalm-github-actions
++        with:
++          relative_dir: ./subdir
+```
+
 
 Auth for private composer repositories
 -------------------------------
