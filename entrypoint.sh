@@ -47,7 +47,13 @@ fi
 
 if [ -n "$INPUT_RELATIVE_DIR" ]
 then
-    cd "$INPUT_RELATIVE_DIR" || echo "Could not cd into the specified subdir."; exit 1
+    if [ -d "$INPUT_RELATIVE_DIR" ]; then
+        echo "changing directory into $INPUT_RELATIVE_DIR"
+        cd "$INPUT_RELATIVE_DIR"
+    else
+    	echo "given relative_dir not existing"
+	exit 1
+    fi
 fi
 
 if test -f "composer.json"; then
