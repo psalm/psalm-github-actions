@@ -11,6 +11,11 @@ if [ ! -z "$INPUT_REPORT_FILE" ]; then
     REPORT="--report=$INPUT_REPORT_FILE"
 fi
 
+SHOW_INFO=""
+if [ "$INPUT_SHOW_INFO" = "true"]; then
+  SHOW_INFO="--show-info=true"
+fi
+
 if [ -n "$INPUT_SSH_KEY" ]
 then
     echo "::group::Keys setup for private repositories"
@@ -76,4 +81,4 @@ else
 fi
 
 /composer/vendor/bin/psalm --version
-/composer/vendor/bin/psalm --output-format=github $TAINT_ANALYSIS $REPORT $*
+/composer/vendor/bin/psalm --output-format=github $TAINT_ANALYSIS $REPORT $SHOW_INFO $*

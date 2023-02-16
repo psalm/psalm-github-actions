@@ -14,19 +14,23 @@ name: 'Psalm – Static Analysis for PHP'
 inputs:
   security_analysis:
     required: false
-    default: false
+    default: 'false'
     description: 'Whether or not to use Psalm’s security analysis'
+  show_info:
+    required: false
+    default: 'false'
+    description: 'Whether or not to show non-exception parser findings'
   report_file:
     required: false
     default: ''
     description: 'File for Psalm’s output'
   composer_require_dev:
     required: false
-    default: false
+    default: 'false'
     description: 'Whether or not Composer installs dev packages'
   composer_ignore_platform_reqs:
     required: false
-    default: false
+    default: 'false'
     description: 'Whether or not the --ignore-platform-reqs flag is passed to Composer'
   ssh_key:
     description: The private key contents to use for private repositories
