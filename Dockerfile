@@ -1,4 +1,4 @@
-FROM php:8.1-alpine
+FROM php:8.2-alpine
 
 LABEL "com.github.actions.name"="Psalm"
 LABEL "com.github.actions.description"="A static analysis tool for finding errors in PHP applications"
@@ -29,6 +29,12 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 \
     composer global require vimeo/psalm --prefer-dist --no-progress --dev
 
 ENV PATH /composer/vendor/bin:${PATH}
+
+# Enable opcache and JIT
+
+RUN docker-php-ext-install opcache
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN echo -e "zend.assertions=1\nopcache.enable_cli=true\nopcache.jit_buffer_size=512M\nopcache.jit=1205" >> "$PHP_INI_DIR/php.ini"
 
 # Satisfy Psalm's quest for a composer autoloader (with a symlink that disappears once a volume is mounted at /app)
 
