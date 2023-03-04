@@ -21,7 +21,7 @@ jobs:
           last=$(curl -s https://packagist.org/packages/vimeo/psalm.json|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
           last=$(echo $last | tr -d '"')
           echo "Last Psalm version is $last"
-          echo ::set-output name=last::$last
+          echo "last=$last" >> $GITHUB_OUTPUT
 
           sed -i -re "s/require vimeo\/psalm/require vimeo\/psalm:$last/" Dockerfile
           cat Dockerfile
