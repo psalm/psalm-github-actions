@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Psalm
-        uses: docker://vimeo/psalm-github-actions
+        uses: docker://ghcr.io/psalm/psalm-github-actions
 
 ```
 
@@ -26,8 +26,8 @@ You can also specify a version (after 3.14.2).
 
 ```diff
        - name: Psalm
--        uses: docker://vimeo/psalm-github-actions
-+        uses: docker://vimeo/psalm-github-actions:3.14.2
+-        uses: docker://ghcr.io/psalm/psalm-github-actions
++        uses: docker://ghcr.io/psalm/psalm-github-actions:5.7.7
 ```
 
 ## Use Security Analysis
@@ -36,7 +36,7 @@ Psalm supports [Security Analysis](https://psalm.dev/docs/security_analysis/). Y
 
 ```diff
        - name: Psalm
-         uses: docker://vimeo/psalm-github-actions
+         uses: docker://ghcr.io/psalm/psalm-github-actions
 +        with:
 +          security_analysis: true
 ```
@@ -49,7 +49,7 @@ Use the following config:
 
 ```diff
        - name: Psalm
-         uses: docker://vimeo/psalm-github-actions
+         uses: docker://ghcr.io/psalm/psalm-github-actions
 +        with:
 +          security_analysis: true
 +          report_file: results.sarif
@@ -67,7 +67,7 @@ These are both set to false by default.
 
 ```diff
        - name: Psalm
-         uses: docker://vimeo/psalm-github-actions
+         uses: docker://ghcr.io/psalm/psalm-github-actions
 +        with:
 +          composer_require_dev: true
 +          composer_ignore_platform_reqs: true
@@ -81,7 +81,7 @@ Use the following config:
 
 ```diff
        - name: Psalm
-         uses: docker://vimeo/psalm-github-actions
+         uses: docker://ghcr.io/psalm/psalm-github-actions
 +        with:
 +          relative_dir: ./subdir
 ```
@@ -102,7 +102,7 @@ jobs:
     ...
 
     - name: Psalm
-      uses: docker://vimeo/psalm-github-actions
+      uses: docker://ghcr.io/psalm/psalm-github-actions
       with:
         ssh_key: ${{ secrets.SOME_PRIVATE_KEY }}
         ssh_key_pub: ${{ secrets.SOME_PUBLIC_KEY }}
