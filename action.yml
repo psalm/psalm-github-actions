@@ -1,4 +1,3 @@
-
 # https://help.github.com/en/articles/metadata-syntax-for-github-actions
 
 author: 'muglug'
@@ -45,4 +44,4 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://vimeo/psalm-github-actions'
+  image: 'docker://ghcr.io/psalm/psalm-github-actions'
