@@ -40,6 +40,9 @@ inputs:
   ssh_domain:
     description: The domain to gather SSH public keys for (automatic for github.com, gitlab.com, bitbucket.org)
     required: false
+  relative_dir:
+    description: If your composer file is not in the directory, you can specify the relative directory.
+    required: false
 
 
 runs:
