@@ -12,7 +12,7 @@ if [ ! -z "$INPUT_REPORT_FILE" ]; then
 fi
 
 SHOW_INFO=""
-if [ "$INPUT_SHOW_INFO" = "true"]; then
+if [ "$INPUT_SHOW_INFO" = "true" ]; then
   SHOW_INFO="--show-info=true"
 fi
 
