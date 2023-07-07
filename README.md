@@ -86,6 +86,17 @@ Use the following config:
 +          relative_dir: ./subdir
 ```
 
+If you also want to send the issues to GitHub Security tab with a relative dir, you'll need to update the following step.
+
+```diff
+       - name: Upload Security Analysis results to GitHub
+         uses: github/codeql-action/upload-sarif@v1
+         with:
+-          sarif_file: results.sarif
++          sarif_file: subdir/results.sarif
++          checkout_path: subdir
+```
+
 
 Auth for private composer repositories
 -------------------------------
