@@ -67,7 +67,7 @@ These are both set to false by default.
 
 ```diff
        - name: Psalm
-         uses: docker://ghcr.io/psalm/psalm-github-actions
+         uses: docker://ghcr.io/psalm/psalm-github-actionsa
 +        with:
 +          composer_require_dev: true
 +          composer_ignore_platform_reqs: true
@@ -84,6 +84,17 @@ Use the following config:
          uses: docker://ghcr.io/psalm/psalm-github-actions
 +        with:
 +          relative_dir: ./subdir
+```
+
+If you also want to send the issues to GitHub Security tab with a relative dir, you'll need to update the following step.
+
+```diff
+       - name: Upload Security Analysis results to GitHub
+         uses: github/codeql-action/upload-sarif@v1
+         with:
+-          sarif_file: results.sarif
++          sarif_file: subdir/results.sarif
++          checkout_path: subdir
 ```
 
 
