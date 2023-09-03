@@ -54,7 +54,7 @@ Use the following config:
 +          security_analysis: true
 +          report_file: results.sarif
 +      - name: Upload Security Analysis results to GitHub
-+        uses: github/codeql-action/upload-sarif@v1
++        uses: github/codeql-action/upload-sarif@v2
 +        with:
 +          sarif_file: results.sarif
 ```
