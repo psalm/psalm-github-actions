@@ -16,6 +16,11 @@ if [ "$INPUT_SHOW_INFO" = "true" ]; then
   SHOW_INFO="--show-info=true"
 fi
 
+PHP_VERSION=""
+if [ -n "$INPUT_PHP_VERSION" ]; then
+  PHP_VERSION="--php-version=$INPUT_PHP_VERSION"
+fi
+
 if [ -n "$INPUT_SSH_KEY" ]
 then
     echo "::group::Keys setup for private repositories"
@@ -81,4 +86,4 @@ else
 fi
 
 /composer/vendor/bin/psalm --version
-/composer/vendor/bin/psalm --output-format=github $TAINT_ANALYSIS $REPORT $SHOW_INFO $*
+/composer/vendor/bin/psalm --output-format=github $TAINT_ANALYSIS $REPORT $SHOW_INFO $PHP_VERSION $*
