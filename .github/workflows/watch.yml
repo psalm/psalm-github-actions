@@ -51,6 +51,6 @@ jobs:
     permissions:
       actions: write
     steps:
-      - uses: liskin/gh-workflow-keepalive@v1.1.0
+      - uses: liskin/gh-workflow-keepalive@v1.2.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
