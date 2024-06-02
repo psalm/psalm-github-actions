@@ -43,7 +43,10 @@ inputs:
   relative_dir:
     description: If your composer file is not in the directory, you can specify the relative directory.
     required: false
-
+  php_version:
+    description: The PHP version to run Psalm against
+    required: false
+    default: ''
 
 runs:
   using: 'docker'
