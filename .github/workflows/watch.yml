@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 */4 * * *'
+  push:
+    branches:
+      - master
 
 jobs:
   docker:
@@ -22,8 +25,7 @@ jobs:
       - name: Update Dockerfile with latest version
         id: fetch_version
         run: |
-          last=$(curl -s https://packagist.org/packages/vimeo/psalm.json|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
-          last=$(echo $last | tr -d '"')
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
           echo "Last Psalm version is $last"
           echo "last=$last" >> $GITHUB_OUTPUT
 
@@ -38,11 +40,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build images
-        run: docker build -t ghcr.io/psalm/psalm-github-actions:${{ steps.fetch_version.outputs.last }} -t ghcr.io/psalm/psalm-github-actions:latest .
+        run: |
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
+          docker build -t ghcr.io/psalm/psalm-github-actions:$last -t ghcr.io/psalm/psalm-github-actions:latest .
 
       - name: Publish
         run: |
-          docker push ghcr.io/psalm/psalm-github-actions:${{ steps.fetch_version.outputs.last }}
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
+          docker push ghcr.io/psalm/psalm-github-actions:$last
           docker push ghcr.io/psalm/psalm-github-actions:latest
 
   workflow-keepalive:
@@ -51,6 +56,6 @@ jobs:
     permissions:
       actions: write
     steps:
-      - uses: liskin/gh-workflow-keepalive@v1.1.0
+      - uses: liskin/gh-workflow-keepalive@v1.2.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
