@@ -25,8 +25,7 @@ jobs:
       - name: Update Dockerfile with latest version
         id: fetch_version
         run: |
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
-          last=$(echo $last | tr -d '"')
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
           echo "Last Psalm version is $last"
           echo "last=$last" >> $GITHUB_OUTPUT
 
@@ -42,12 +41,12 @@ jobs:
 
       - name: Build images
         run: |
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
           docker build -t ghcr.io/psalm/psalm-github-actions:$last -t ghcr.io/psalm/psalm-github-actions:latest .
 
       - name: Publish
         run: |
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
           docker push ghcr.io/psalm/psalm-github-actions:$last
           docker push ghcr.io/psalm/psalm-github-actions:latest
 
