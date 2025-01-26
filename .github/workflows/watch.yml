@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 */4 * * *'
+  push:
+    branches:
+      - master
 
 jobs:
   docker:
