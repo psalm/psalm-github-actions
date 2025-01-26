@@ -21,8 +21,8 @@ jobs:
 
       - name: Update Dockerfile with latest version
         id: fetch_version
+          last=$(curl -s https://packagist.org/packages/vimeo/psalm.json?v=latest|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
         run: |
-          last=$(curl -s https://packagist.org/packages/vimeo/psalm.json|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
           last=$(echo $last | tr -d '"')
           echo "Last Psalm version is $last"
           echo "last=$last" >> $GITHUB_OUTPUT
