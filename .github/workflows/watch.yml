@@ -24,8 +24,8 @@ jobs:
 
       - name: Update Dockerfile with latest version
         id: fetch_version
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
         run: |
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
           last=$(echo $last | tr -d '"')
           echo "Last Psalm version is $last"
           echo "last=$last" >> $GITHUB_OUTPUT
@@ -41,11 +41,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build images
-        run: docker build -t ghcr.io/psalm/psalm-github-actions:${{ steps.fetch_version.outputs.last }} -t ghcr.io/psalm/psalm-github-actions:latest .
+        run: |
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
+          docker build -t ghcr.io/psalm/psalm-github-actions:$last -t ghcr.io/psalm/psalm-github-actions:latest .
 
       - name: Publish
         run: |
-          docker push ghcr.io/psalm/psalm-github-actions:${{ steps.fetch_version.outputs.last }}
+          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
+          docker push ghcr.io/psalm/psalm-github-actions:$last
           docker push ghcr.io/psalm/psalm-github-actions:latest
 
   workflow-keepalive:
