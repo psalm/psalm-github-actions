@@ -81,4 +81,4 @@ else
 fi
 
 /composer/vendor/bin/psalm --version
-/composer/vendor/bin/psalm --output-format=github $TAINT_ANALYSIS $REPORT $SHOW_INFO $*
+/composer/vendor/bin/psalm --force-jit --output-format=github $TAINT_ANALYSIS $REPORT $SHOW_INFO $*
