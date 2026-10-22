@@ -2,6 +2,11 @@ name: Watch
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Psalm version to (re)build, e.g. 6.20.0 (defaults to the latest stable release)'
+        required: false
+        default: ''
   schedule:
     - cron: '30 */4 * * *'
   push:
@@ -22,33 +27,83 @@ jobs:
         with:
           ref: master
 
-      - name: Update Dockerfile with latest version
-        id: fetch_version
+      - name: Find Psalm version
+        id: version
+        env:
+          REQUESTED: ${{ inputs.version }}
         run: |
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
-          echo "Last Psalm version is $last"
-          echo "last=$last" >> $GITHUB_OUTPUT
+          latest=$(curl -sf 'https://packagist.org/packages/vimeo/psalm.json?v=latest' | jq -r '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
+          if ! echo "$latest" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Could not determine the latest Psalm version from Packagist (got '$latest')"
+            exit 1
+          fi
+          echo "Last Psalm version is $latest"
 
-          sed -i -re "s/require vimeo\/psalm/require vimeo\/psalm:$last/" Dockerfile
-          cat Dockerfile
+          version=${REQUESTED:-$latest}
+          if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Invalid Psalm version '$version'"
+            exit 1
+          fi
+
+          if ! docker manifest inspect "ghcr.io/danog/psalm:$version" > /dev/null 2>&1; then
+            if [ -n "$REQUESTED" ]; then
+              echo "::error::Base image ghcr.io/danog/psalm:$version does not exist"
+              exit 1
+            fi
+            echo "::warning::Base image ghcr.io/danog/psalm:$version is not published yet, skipping"
+            exit 0
+          fi
+
+          echo "Building Psalm $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          if [ "$version" = "$latest" ]; then
+            echo "latest=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Docker login
+        if: steps.version.outputs.version
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build images
+      - name: Build image
+        if: steps.version.outputs.version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          LATEST: ${{ steps.version.outputs.latest }}
         run: |
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
-          docker build -t ghcr.io/psalm/psalm-github-actions:$last -t ghcr.io/psalm/psalm-github-actions:latest .
+          docker build --pull --build-arg PSALM_VERSION=$VERSION -t ghcr.io/psalm/psalm-github-actions:$VERSION .
+          if [ "$LATEST" = "true" ]; then
+            docker tag ghcr.io/psalm/psalm-github-actions:$VERSION ghcr.io/psalm/psalm-github-actions:latest
+          fi
+
+      - name: Check Psalm version inside the image
+        if: steps.version.outputs.version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          actual=$(docker run --rm --entrypoint /composer/vendor/bin/psalm ghcr.io/psalm/psalm-github-actions:$VERSION --version)
+          echo "$actual"
+          case "$actual" in
+            "Psalm $VERSION@"*) ;;
+            *)
+              echo "::error::Image tagged $VERSION contains '$actual'"
+              exit 1
+              ;;
+          esac
 
       - name: Publish
+        if: steps.version.outputs.version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          LATEST: ${{ steps.version.outputs.latest }}
         run: |
-          last=$(curl -s 'https://packagist.org/packages/vimeo/psalm.json?v=latest'|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))' | tr -d '"')
-          docker push ghcr.io/psalm/psalm-github-actions:$last
-          docker push ghcr.io/psalm/psalm-github-actions:latest
+          docker push ghcr.io/psalm/psalm-github-actions:$VERSION
+          if [ "$LATEST" = "true" ]; then
+            docker push ghcr.io/psalm/psalm-github-actions:latest
+          fi
 
   workflow-keepalive:
     if: github.event_name == 'schedule'

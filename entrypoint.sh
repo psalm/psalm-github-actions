@@ -21,6 +21,10 @@ if [ -n "$INPUT_PHP_VERSION" ]; then
   PHP_VERSION="--php-version=$INPUT_PHP_VERSION"
 fi
 
+# The mounted workspace is owned by the runner user, not by the container's
+# root user, so git refuses to read it ("detected dubious ownership").
+git config --global --add safe.directory '*'
+
 if [ -n "$INPUT_SSH_KEY" ]
 then
     echo "::group::Keys setup for private repositories"
