@@ -22,18 +22,20 @@ jobs:
 
 ## Specify Psalm version
 
-You can also specify a version (after 3.14.2), including the latest alpha/beta/rc. `latest` is the latest stable release.
+You can also specify a version (after 3.14.2), including the latest alpha/beta/rc. `latest` is the latest stable release (Psalm 7).
 
 ```diff
        - name: Psalm
 -        uses: docker://ghcr.io/psalm/psalm-github-actions
-+        uses: docker://ghcr.io/psalm/psalm-github-actions:6.20.5
++        uses: docker://ghcr.io/psalm/psalm-github-actions:7.0.0
 ```
 
+To stay on Psalm 6:
+
 ```diff
        - name: Psalm
 -        uses: docker://ghcr.io/psalm/psalm-github-actions
-+        uses: docker://ghcr.io/psalm/psalm-github-actions:7.0.0-rc27
++        uses: docker://ghcr.io/psalm/psalm-github-actions:6.20.6
 ```
 
 ## Use Security Analysis
