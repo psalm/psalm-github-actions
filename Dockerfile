@@ -1,6 +1,6 @@
 ARG PSALM_VERSION=latest
 
-FROM ghcr.io/danog/psalm:${PSALM_VERSION}
+FROM ghcr.io/psalm/psalm:${PSALM_VERSION}
 
 # Satisfy Psalm's quest for a composer autoloader (with a symlink that disappears once a volume is mounted at /app)
 

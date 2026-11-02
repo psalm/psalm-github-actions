@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Psalm
         uses: docker://ghcr.io/psalm/psalm-github-actions
@@ -22,17 +22,23 @@ jobs:
 
 ## Specify Psalm version
 
-You can also specify a version (after 3.14.2).
+You can also specify a version (after 3.14.2), including the latest alpha/beta/rc. `latest` is the latest stable release.
 
 ```diff
        - name: Psalm
 -        uses: docker://ghcr.io/psalm/psalm-github-actions
-+        uses: docker://ghcr.io/psalm/psalm-github-actions:5.7.7
++        uses: docker://ghcr.io/psalm/psalm-github-actions:6.20.5
+```
+
+```diff
+       - name: Psalm
+-        uses: docker://ghcr.io/psalm/psalm-github-actions
++        uses: docker://ghcr.io/psalm/psalm-github-actions:7.0.0-rc27
 ```
 
 ## Use Security Analysis
 
-Psalm supports [Security Analysis](https://psalm.dev/docs/security_analysis/). You can use this config to show security analysis reports:
+Psalm supports [Security Analysis](https://psalm.dev/docs/security_analysis/). Psalm 7 always runs it; on older versions, use this config to show security analysis reports:
 
 ```diff
        - name: Psalm
@@ -54,7 +60,7 @@ Use the following config:
 +          security_analysis: true
 +          report_file: results.sarif
 +      - name: Upload Security Analysis results to GitHub
-+        uses: github/codeql-action/upload-sarif@v2
++        uses: github/codeql-action/upload-sarif@v3
 +        with:
 +          sarif_file: results.sarif
 ```

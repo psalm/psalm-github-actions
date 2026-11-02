@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Psalm version to (re)build, e.g. 6.20.0 (defaults to the latest stable release)'
+        description: 'Psalm version to (re)build, e.g. 6.20.0 or 7.0.0-rc27 (defaults to the latest stable release and the newest prerelease)'
         required: false
         default: ''
   schedule:
@@ -27,83 +27,90 @@ jobs:
         with:
           ref: master
 
-      - name: Find Psalm version
+      - name: Find Psalm versions
         id: version
         env:
           REQUESTED: ${{ inputs.version }}
         run: |
-          latest=$(curl -sf 'https://packagist.org/packages/vimeo/psalm.json?v=latest' | jq -r '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
+          # the latest stable release, plus the newest alpha/beta/rc when it's newer
+          read -r latest prerelease <<EOF
+          $(curl -sf 'https://repo.packagist.org/p2/vimeo/psalm.json' | jq -r '.packages["vimeo/psalm"][].version' | php -r '
+              $all = array_filter(array_map("trim", file("php://stdin")), fn($v) => preg_match("/^\d+\.\d+\.\d+(-(alpha|beta|rc)\d+)?$/", $v));
+              usort($all, "version_compare");
+              $stable = array_values(array_filter($all, fn($v) => !str_contains($v, "-")));
+              $latest = end($stable);
+              $newest = end($all);
+              echo $latest, " ", $newest !== $latest && version_compare($newest, $latest, ">") ? $newest : "", "\n";
+          ')
+          EOF
           if ! echo "$latest" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "::error::Could not determine the latest Psalm version from Packagist (got '$latest')"
             exit 1
           fi
-          echo "Last Psalm version is $latest"
+          echo "Latest Psalm version is $latest${prerelease:+, latest prerelease is $prerelease}"
 
-          version=${REQUESTED:-$latest}
-          if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "::error::Invalid Psalm version '$version'"
-            exit 1
-          fi
-
-          if ! docker manifest inspect "ghcr.io/danog/psalm:$version" > /dev/null 2>&1; then
-            if [ -n "$REQUESTED" ]; then
-              echo "::error::Base image ghcr.io/danog/psalm:$version does not exist"
+          if [ -n "$REQUESTED" ]; then
+            if ! echo "$REQUESTED" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)[0-9]+)?$'; then
+              echo "::error::Invalid Psalm version '$REQUESTED'"
               exit 1
             fi
-            echo "::warning::Base image ghcr.io/danog/psalm:$version is not published yet, skipping"
-            exit 0
+            candidates=$REQUESTED
+          else
+            candidates="$latest $prerelease"
           fi
 
-          echo "Building Psalm $version"
-          echo "version=$version" >> $GITHUB_OUTPUT
-          if [ "$version" = "$latest" ]; then
-            echo "latest=true" >> $GITHUB_OUTPUT
-          fi
+          versions=""
+          for version in $candidates; do
+            if ! docker manifest inspect "ghcr.io/psalm/psalm:$version" > /dev/null 2>&1; then
+              if [ -n "$REQUESTED" ]; then
+                echo "::error::Base image ghcr.io/psalm/psalm:$version does not exist"
+                exit 1
+              fi
+              echo "::warning::Base image ghcr.io/psalm/psalm:$version is not published yet, skipping"
+              continue
+            fi
+            versions="$versions $version"
+          done
+
+          echo "Building Psalm$versions"
+          echo "versions=$versions" >> $GITHUB_OUTPUT
+          echo "latest=$latest" >> $GITHUB_OUTPUT
 
       - name: Docker login
-        if: steps.version.outputs.version
+        if: steps.version.outputs.versions
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image
-        if: steps.version.outputs.version
+      - name: Build, check and publish images
+        if: steps.version.outputs.versions
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          VERSIONS: ${{ steps.version.outputs.versions }}
           LATEST: ${{ steps.version.outputs.latest }}
         run: |
-          docker build --pull --build-arg PSALM_VERSION=$VERSION -t ghcr.io/psalm/psalm-github-actions:$VERSION .
-          if [ "$LATEST" = "true" ]; then
-            docker tag ghcr.io/psalm/psalm-github-actions:$VERSION ghcr.io/psalm/psalm-github-actions:latest
-          fi
+          for version in $VERSIONS; do
+            image=ghcr.io/psalm/psalm-github-actions:$version
+            docker build --pull --build-arg PSALM_VERSION=$version -t $image .
 
-      - name: Check Psalm version inside the image
-        if: steps.version.outputs.version
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          actual=$(docker run --rm --entrypoint /composer/vendor/bin/psalm ghcr.io/psalm/psalm-github-actions:$VERSION --version)
-          echo "$actual"
-          case "$actual" in
-            "Psalm $VERSION@"*) ;;
-            *)
-              echo "::error::Image tagged $VERSION contains '$actual'"
-              exit 1
-              ;;
-          esac
+            actual=$(docker run --rm --entrypoint /composer/vendor/bin/psalm $image --version)
+            echo "$actual"
+            case "$actual" in
+              "Psalm $version@"*) ;;
+              *)
+                echo "::error::Image tagged $version contains '$actual'"
+                exit 1
+                ;;
+            esac
 
-      - name: Publish
-        if: steps.version.outputs.version
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-          LATEST: ${{ steps.version.outputs.latest }}
-        run: |
-          docker push ghcr.io/psalm/psalm-github-actions:$VERSION
-          if [ "$LATEST" = "true" ]; then
-            docker push ghcr.io/psalm/psalm-github-actions:latest
-          fi
+            docker push $image
+            # prereleases never become latest
+            if [ "$version" = "$LATEST" ]; then
+              docker tag $image ghcr.io/psalm/psalm-github-actions:latest
+              docker push ghcr.io/psalm/psalm-github-actions:latest
+            fi
+          done
 
   workflow-keepalive:
     if: github.event_name == 'schedule'
